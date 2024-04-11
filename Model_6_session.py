@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics.pairwise import haversine_distances
+import matplotlib.pyplot as plt
+
 
 # Read the dataset
 df = pd.read_csv("sigfox_dataset_rural (1).csv")
@@ -51,3 +53,11 @@ for n,i in enumerate(range(len(X_test))):
 
 print(np.mean(errors))
 print(np.median(errors))
+
+errors = np.array(errors).reshape(-1) # Convert errors to a 1D array for histogram plotting
+
+plt.hist(errors, bins=100) # Plot histogram with 20 bins
+plt.xlabel('Error (meters)')
+plt.ylabel('Frequency')
+plt.title('Histogram of Errors')
+plt.show()

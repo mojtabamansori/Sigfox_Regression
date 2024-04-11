@@ -8,8 +8,7 @@ from sklearn.metrics import mean_squared_error, median_absolute_error
 from sklearn.metrics.pairwise import haversine_distances
 from math import radians
 from sklearn.preprocessing import LabelEncoder
-
-
+import matplotlib.pyplot as plt
 
 dataset = pd.read_csv('sigfox_dataset_rural (1).csv')
 
@@ -36,6 +35,10 @@ for n,i in enumerate(range(len(X_test))):
     error = haversine_distances(np.reshape(np.radians(y_test[i]), (1, -1)), np.reshape(np.radians(centroids), (1, -1)))* 6371000
     errors.append(error)
 
-print(np.mean(errors))
-print(np.median(errors))
+errors = np.array(errors).reshape(-1) # Convert errors to a 1D array for histogram plotting
 
+plt.hist(errors, bins=100) # Plot histogram with 20 bins
+plt.xlabel('Error (meters)')
+plt.ylabel('Frequency')
+plt.title('Histogram of Errors')
+plt.show()
