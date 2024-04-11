@@ -20,5 +20,6 @@ for i in k:
     filtered_df = pd.DataFrame(filtered_data)
 
     # Save the filtered data to an Excel file
-    file_name = f"data_{i}_to_{i + 0.1}.xlsx"
+    file_name = file_name = f"session/data_{i:.1f}_to_{i + 0.1:.1f}.csv"
+
     filtered_df.to_csv(file_name, index=False)

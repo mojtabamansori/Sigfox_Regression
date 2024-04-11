@@ -26,8 +26,9 @@ y_train = np.array(y_train)
 y_test = np.array(y_test)
 k = 1
 errors = []
-
-for i in range(len(X_test)):
+print(y_train.shape,X_train.shape)
+for n,i in enumerate(range(len(X_test))):
+    print(f'\r{n}/{len(X_test)}',end='')
     all_distances = np.sqrt(np.sum(np.abs(X_train - X_test[i]) ** 2, axis=1))
 
     k_indexes = np.argsort(all_distances)[0:k]
