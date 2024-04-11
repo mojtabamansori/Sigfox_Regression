@@ -19,7 +19,8 @@ y_test = np.array(test_dataset[['Latitude', 'Longitude']])
 k = 1
 errors = []
 
-for i in range(len(X_test)):
+for n,i in enumerate(range(len(X_test))):
+    print(f'\r{n}/{len(X_test)}',end='')
     all_distances = np.sqrt(np.sum(np.abs(X_train - X_test[i]) ** 2, axis=1))
     k_indexes = np.argsort(all_distances)[:k]
     centroids = np.mean(y_train[k_indexes, :], axis=0)
