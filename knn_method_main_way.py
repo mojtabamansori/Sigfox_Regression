@@ -17,7 +17,7 @@ y_train = np.array(train_dataset[['Latitude', 'Longitude']])
 y_test = np.array(test_dataset[['Latitude', 'Longitude']])
 
 k = 1
-errors = []
+errors = [0]
 
 for n,i in enumerate(range(len(X_test))):
     print(f'\r{n}/{len(X_test)}',end='')
@@ -26,6 +26,9 @@ for n,i in enumerate(range(len(X_test))):
     centroids = np.mean(y_train[k_indexes, :], axis=0)
     error = haversine_distances(np.reshape(np.radians(y_test[i]), (1, -1)), np.reshape(np.radians(centroids), (1, -1))) * 6371000
     errors.append(error)
+    filtered_df = pd.DataFrame(np.expand_dims(errors, axis=1))
+    file_name = file_name = f"error/main_way_error.csv"
+    filtered_df.to_csv(file_name, index=False)
 
 print("Mean error:", np.mean(errors))
 print("Median error:", np.median(errors))
