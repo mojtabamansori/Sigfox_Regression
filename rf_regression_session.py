@@ -43,7 +43,7 @@ def evaluation(Y_test_combined, pred, i2, number):
     })
 
     # Save results to CSV
-    results_df.to_csv(f'result/evaluation_results_{number}.csv', index=False)
+    results_df.to_csv(f'result/evaluation_results_{number}_{i2}.csv', index=False)
 
 
 k = [3.6, 3.7, 3.8, 3.9, 4, 4.1, 4.2, 4.3]
