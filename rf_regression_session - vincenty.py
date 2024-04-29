@@ -56,7 +56,5 @@ for i in range(len(pred)):
 # Print mean and median errors
 print(f"Mean Error: {np.mean(errors)} meters")
 print(f"Median Error: {np.median(errors)} meters")
-
-# Calculate and print R2 Score
 r2 = r2_score(Y_test_combined, pred)
 print(f"R2 Score: {r2}")
