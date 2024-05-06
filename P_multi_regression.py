@@ -93,30 +93,29 @@ for i in range(len(k2)-1):
 
     X_current = filtered_data[:, :137]
     Y_current = filtered_data[:, 137:]
-    print(len(X_current))
+
 
     X_train_temp, X_test_temp, Y_train_temp, Y_test_temp = train_test_split(X_current, Y_current,
                                                                             test_size=0.3, random_state=42)
-    if X_train_combined is None:
-        X_train_combined = X_train_temp
-        Y_train_combined = Y_train_temp
-        X_test_combined = X_test_temp
-        Y_test_combined = Y_test_temp
-    else:
-        X_train_combined = np.concatenate((X_train_temp, X_train_combined), axis=0)
-        Y_train_combined = np.concatenate((Y_train_temp, Y_train_combined), axis=0)
-        X_test_combined = np.concatenate((X_test_temp, X_test_combined), axis=0)
-        Y_test_combined = np.concatenate((Y_test_temp, Y_test_combined), axis=0)
 
-area_moshtrak_index = np.zeros((8, 137))
 
-for ii, i in enumerate(k2):
-    indices = np.argwhere((i <= Y_train_combined[:, 1]) & (Y_train_combined[:, 1] <= i + 0.1))
-    session_X_train = X_train_combined[indices[:, 0]]
-    session_Y_train = Y_train_combined[indices[:, 0]]
-    common_pattern = area_moshtrak_index[ii]
-    model = RandomForestRegressor(random_state=42)
+    area_moshtrak_index = np.zeros((8, 137))
+
+    # print(X_train_temp.shape())
+    X_train_temp = np.array(X_train_temp)
+    Y_train_temp = np.array(Y_train_temp)
+    session_X_test = np.array(X_test_temp)
+    session_Y_test = np.array(Y_test_temp)
+
+    indices = np.argwhere((k2[i] <= Y_train_temp[:, 1]) & (Y_train_temp[:, 1] <= k2[i + 1]))
+
+    session_X_train = X_train_temp[indices[:, 0], :]
+    session_Y_train = Y_train_temp[indices[:, 0], :]
+    # common_pattern = area_moshtrak_index[ii]
+    model = RandomForestRegressor()
     model.fit(session_X_train, session_Y_train)
-    y_pred = model.predict(X_test_combined)
-    if np.all(session_X_train == -200) == np.all(common_pattern == -200):
-        evaluation(Y_test_combined, y_pred, ii, number=42)
+    y_pred = model.predict(session_X_test)
+
+    if np.all(session_X_train == -200) == np.all(session_X_test == -200):
+        print(len(y_pred))
+        evaluation(session_Y_test, y_pred, 1, number=42)
