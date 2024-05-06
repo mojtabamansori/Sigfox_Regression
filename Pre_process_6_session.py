@@ -5,7 +5,7 @@ df = pd.read_csv("sigfox_dataset_rural (1).csv")
 data_array = df.to_numpy()
 X_Train = data_array[:, :137]  # Select columns up to index 136
 Y_Train = data_array[:, 138:]  # Select column at index 138
-k = [3.6, 3.7, 3.8, 3.9, 4, 4.1, 4.2, 4.3, 4.4]
+k = [3.60, 3.75, 3.85, 3.95, 4.05, 4.15, 4.25, 4.35, 4.45]
 
 for i in k:
     indices = np.argwhere((i <= Y_Train[:,1]) & (Y_Train[:,1] <= i + 0.1))
@@ -20,6 +20,6 @@ for i in k:
     filtered_df = pd.DataFrame(filtered_data)
 
     # Save the filtered data to an Excel file
-    file_name = file_name = f"session/data_{i:.1f}_to_{i + 0.1:.1f}.csv"
+    file_name = file_name = f"session/data_{i:.2f}_to_{i + 0.1:.2f}.csv"
 
     filtered_df.to_csv(file_name, index=False)
