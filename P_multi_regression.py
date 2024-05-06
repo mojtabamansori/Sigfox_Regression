@@ -79,7 +79,8 @@ k2 = [3.59, 3.7137,
       4.36]
 k2 = np.array(k2)
 
-for i in range(len(k2)-1):
+for ii, i in enumerate(range(len(k2)-1)):
+    print('1', ii / len(k2)-1)
 
     indices = np.argwhere((k2[i] <= Y_Train[:, 1]) & (Y_Train[:, 1] <= k2[i+1]))
 
@@ -99,23 +100,133 @@ for i in range(len(k2)-1):
                                                                             test_size=0.3, random_state=42)
 
 
+
+    if ii == 0:
+        X_train_combined = X_train_temp
+        Y_train_combined = Y_train_temp
+        X_test_combined = X_test_temp
+        Y_test_combined = Y_test_temp
+
+    else:
+        X_train_combined = np.concatenate((X_train_temp, X_train_combined), axis=0)
+        Y_train_combined = np.concatenate((Y_train_temp, Y_train_combined), axis=0)
+        X_test_combined = np.concatenate((X_test_temp, X_test_combined), axis=0)
+        Y_test_combined = np.concatenate((Y_test_temp, Y_test_combined), axis=0)
+
+
+
     area_moshtrak_index = np.zeros((8, 137))
 
     # print(X_train_temp.shape())
-    X_train_temp = np.array(X_train_temp)
-    Y_train_temp = np.array(Y_train_temp)
-    session_X_test = np.array(X_test_temp)
-    session_Y_test = np.array(Y_test_temp)
+    # X_train_temp = np.array(X_train_combined)
+    # Y_train_temp = np.array(Y_train_combined)
+    session_X_test = np.array(X_test_combined)
+    session_Y_test = np.array(Y_test_combined)
 
     indices = np.argwhere((k2[i] <= Y_train_temp[:, 1]) & (Y_train_temp[:, 1] <= k2[i + 1]))
 
     session_X_train = X_train_temp[indices[:, 0], :]
     session_Y_train = Y_train_temp[indices[:, 0], :]
-    # common_pattern = area_moshtrak_index[ii]
-    model = RandomForestRegressor()
-    model.fit(session_X_train, session_Y_train)
-    y_pred = model.predict(session_X_test)
 
-    if np.all(session_X_train == -200) == np.all(session_X_test == -200):
-        print(len(y_pred))
-        evaluation(session_Y_test, y_pred, 1, number=42)
+    matrix = np.argwhere(session_X_train == -200)[:, 1]
+    unique_vals, counts = np.unique(matrix, return_counts=True)
+    vals = []
+    for val, count in zip(unique_vals, counts):
+        if count>10:
+            vals.append(val)
+
+    if ii == 0:
+        val_0 = vals
+        model0 = RandomForestRegressor()
+        model0.fit(session_X_train, session_Y_train)
+    if ii == 1:
+        val_1 = vals
+        model1 = RandomForestRegressor()
+        model1.fit(session_X_train, session_Y_train)
+    if ii == 2:
+        val_2 = vals
+        model2 = RandomForestRegressor()
+        model2.fit(session_X_train, session_Y_train)
+    if ii == 3:
+        val_3 = vals
+        model3 = RandomForestRegressor()
+        model3.fit(session_X_train, session_Y_train)
+    if ii == 4:
+        val_4 = vals
+        model4 = RandomForestRegressor()
+        model4.fit(session_X_train, session_Y_train)
+    if ii == 5:
+        val_5 = vals
+        model5 = RandomForestRegressor()
+        model5.fit(session_X_train, session_Y_train)
+    if ii == 6:
+        val_6 = vals
+        model6 = RandomForestRegressor()
+        model6.fit(session_X_train, session_Y_train)
+    if ii == 7:
+        val_7 = vals
+        model7 = RandomForestRegressor()
+        model7.fit(session_X_train, session_Y_train)
+
+for i in range(len(session_X_test)):
+    print('2',i/len(session_X_test))
+
+    matrix = np.argwhere(session_X_test == -200)[:, 1]
+    unique_vals, counts = np.unique(matrix, return_counts=True)
+    vals = []
+    preds0 = []
+    preds1 = []
+    preds2 = []
+    preds3 = []
+    preds4 = []
+    preds5 = []
+    preds6 = []
+    preds7 = []
+    errors_eval = []
+
+
+
+
+    for val, count in zip(unique_vals, counts):
+        vals.append(val)
+
+    if vals == val_0:
+        pred0 = model0.predict(session_X_test[i, :].reshape(1,-1))
+        errors_eval.append(vincenty(pred0[0], session_Y_test[i]))
+        preds0.append(pred0)
+    if vals == val_1:
+        pred1 = model1.predict(session_X_test[i, :].reshape(1,-1))
+        errors_eval.append(vincenty(pred1[0], session_Y_test[i]))
+        preds1.append(pred1)
+    if vals == val_2:
+        pred2 = model2.predict(session_X_test[i, :].reshape(1,-1))
+        errors_eval.append(vincenty(pred2[0], session_Y_test[i]))
+        preds2.append(pred2)
+    if vals == val_3:
+        pred3 = model3.predict(session_X_test[i, :].reshape(1,-1))
+        errors_eval.append(vincenty(pred3[0], session_Y_test[i]))
+        preds3.append(pred3)
+    if vals == val_4:
+        pred4 = model4.predict(session_X_test[i, :].reshape(1,-1))
+        errors_eval.append(vincenty(pred4[0], session_Y_test[i]))
+        preds4.append(pred4)
+    if vals == val_5:
+        pred5 = model5.predict(session_X_test[i, :].reshape(1,-1))
+        errors_eval.append(vincenty(pred5[0], session_Y_test[i]))
+        preds5.append(pred5)
+    if vals == val_6:
+        pred6 = model6.predict(session_X_test[i, :].reshape(1,-1))
+        errors_eval.append(vincenty(pred6[0], session_Y_test[i]))
+        preds6.append(pred6)
+    # if vals == val_7:
+    #     pred7 = model7.predict(session_X_test[i, :].reshape(1,-1))
+    #     errors_eval.append(vincenty(pred7[0], session_Y_test[i]))
+    #     preds7.append(pred7)
+
+mean_error = np.mean(errors_eval) * 1000
+median_error = np.median(errors_eval) * 1000
+
+print(f"Mean Error: {mean_error} meters")
+print(f"Median Error: {median_error} meters")
+
+
