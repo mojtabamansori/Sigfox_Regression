@@ -133,42 +133,58 @@ index_2 = (~(((min_x < Y_train_combined[:, 0]) &
                              (((min_y + ((2*(max_y-min_y))/3))) < Y_train_combined[:, 1]) &
                              (Y_train_combined[:, 1] < max_y))))
 
-index_3 =
+index_3 = ((((min_x + ((max_x-min_x)/2))) < Y_train_combined[:, 0]) &
+                             (Y_train_combined[:, 0] < max_x ) &
+                             (((min_y + ((2*(max_y-min_y))/3))) < Y_train_combined[:, 1]) &
+                             (Y_train_combined[:, 1] < max_y))
+
 X_Train_1 = X_train_combined[index_1]
 Y_Train_1 = Y_train_combined[index_1]
 
-X_Train_2 = X_train_combined[]
+X_Train_2 = X_train_combined[index_2]
+Y_Train_2 = Y_train_combined[index_2]
 
-X_Train_3 = X_train_combined[(((min_x + ((max_x-min_x)/2))) < Y_train_combined[:, 0]) &
-                             (Y_train_combined[:, 0] < max_x ) &
-                             (((min_y + ((2*(max_y-min_y))/3))) < Y_train_combined[:, 1]) &
-                             (Y_train_combined[:, 1] < max_y)]
+X_Train_3 = X_train_combined[index_3]
+Y_Train_3 = Y_train_combined[index_3]
+
 
 model1 = RandomForestRegressor()
-model1.fit(X_Train_1, session_Y_train)
+model1.fit(X_Train_1, Y_Train_1)
+model2 = RandomForestRegressor()
+model2.fit(X_Train_2, Y_Train_2)
+model3 = RandomForestRegressor()
+model3.fit(X_Train_3, Y_Train_3)
 
-# mean_xtrain1 = np.mean(X_Train_1, axis=0)
-# mean_xtrain2 = np.mean(X_Train_2, axis=0)
-# mean_xtrain3 = np.mean(X_Train_3, axis=0)
-# X_test_combined
-# for i in range(len(X_test_combined)):
-#     X_test_combined[i, :]
-#     dist1 = distance.euclidean(X_test_combined[i], mean_xtrain1)
-#     dist2 = distance.euclidean(X_test_combined[i], mean_xtrain2)
-#     dist3 = distance.euclidean(X_test_combined[i], mean_xtrain3)
-#     k = np.array([dist1, dist2, dist3])
-#     k_i = np.argmin(k)
-#
-#     if k_i == 0:
-#         model0
-#
-#     if k_i == 0:
-#         model0
-#
-#     if k_i == 0:
-#         model0
-#
+mean_xtrain1 = np.mean(X_Train_1, axis=0)
+mean_xtrain2 = np.mean(X_Train_2, axis=0)
+mean_xtrain3 = np.mean(X_Train_3, axis=0)
+errors_eval = []
+for i in range(len(X_test_combined)):
+    print(i/len(X_test_combined))
+    X_test_combined[i, :]
+    dist1 = distance.euclidean(X_test_combined[i], mean_xtrain1)
+    dist2 = distance.euclidean(X_test_combined[i], mean_xtrain2)
+    dist3 = distance.euclidean(X_test_combined[i], mean_xtrain3)
+    k = np.array([dist1, dist2, dist3])
+    k_i = np.argmin(k)
 
+    if k_i == 0:
+        pred1 = model1.predict(X_test_combined[i, :].reshape(1,-1))
+        errors_eval.append(vincenty(pred1, Y_test_combined[i,:]))
+
+    if k_i == 1:
+        pred2 = model2.predict(X_test_combined[i, :].reshape(1,-1))
+        errors_eval.append(vincenty(pred2, Y_test_combined[i, :]))
+
+    if k_i == 2:
+        pred3 = model3.predict(X_test_combined[i, :].reshape(1,-1))
+        errors_eval.append(vincenty(pred3, Y_test_combined[i, :]))
+
+mean_error = np.mean(errors_eval) * 1000
+median_error = np.median(errors_eval) * 1000
+
+print(f"Mean Error: {mean_error} meters")
+print(f"Median Error: {median_error} meters")
 
 # X_Train_2 = X_train_combined[min_x < Y_train_combined[:, 0] < (min_x + ((max_x-min_x)/2)),
 #                              min_y < Y_train_combined[:, 1] < (min_y + ((max_y-min_y)/3))]
