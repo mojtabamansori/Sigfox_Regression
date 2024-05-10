@@ -50,13 +50,13 @@ list_fualt_not = [9, 10, 11, 12, 17, 19, 20, 22, 26, 30, 58, 61, 66, 70, 71, 72,
                   28, 24, 18, 62, 102, 126,
                   0, 1, 2, 4, 6, 7, 8, 13, 14, 15, 16, 21, 29, 31, 32, 33, 36, 37, 38, 39, 40, 43, 44, 59, 60, 64, 68, 73, 109]
 
-k = [3.6, 3.7, 3.8, 3.9, 4, 4.1, 4.2]
+k = [3.6, 3.7, 3.8, 3.9, 4, 4.1, 4.2, 4.3]
 for i2 in range(50, 60, 1):
     regressor = RandomForestRegressor()
     X_train_combined, Y_train_combined = [], []
     X_test_combined, Y_test_combined = [], []
     for range_longitude in k:
-        file_name = f"session/data_{range_longitude:.1f}_to_{(range_longitude + 0.1):.1f}.csv"
+        file_name = f"session/data_{range_longitude:.1f}_to_{range_longitude + 0.1:.1f}.csv"
         df = pd.read_csv(file_name)
         data_array = df.to_numpy()
         X_current = data_array[:, :137]
