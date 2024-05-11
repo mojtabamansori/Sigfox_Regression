@@ -27,9 +27,9 @@ X_Train, X_test_combined, Y_Train, Y_test_combined = train_test_split(X_Train, Y
 # fault = 18 34 35 41 42 45 46:57 63 65 69 74 76 77 78 79 80 81 87 93 95 98 106 108 111 112 113 114 115 116 117 120:125 127:136
 
 list_1 = [9, 10, 11, 12, 17, 19, 20, 22, 26, 30, 58, 61, 66, 70, 71, 72, 75, 82, 83, 84, 85,86, 88, 89, 90, 91 ,
-          92, 94, 96, 97, 99, 100, 101, 103, 104, 105, 107, 110, 118, 119, 3, 5, 23, 25, 27, 67]
-list_2 = [28, 24, 18, 62, 102, 126, 3, 5, 23, 25, 27, 67]
-list_3 = [0, 1, 2, 4, 6, 7, 8, 13, 14, 15, 16, 21, 29, 31, 32, 33, 36, 37, 38, 39, 40, 43, 44, 59, 60, 64, 68, 73, 109, 3, 5, 23, 25, 27, 67]
+          92, 94, 96, 97, 99, 100, 101, 103, 104, 105, 107, 110, 118, 119,3, 5, 23, 25, 27, 67]
+list_2 = [28, 24, 18, 62, 102, 126,3, 5, 23, 25, 27, 67]
+list_3 = [0, 1, 2, 4, 6, 7, 8, 13, 14, 15, 16, 21, 29, 31, 32, 33, 36, 37, 38, 39, 40, 43, 44, 59, 60, 64, 68, 73, 109,3, 5, 23, 25, 27, 67]
 
 
 X_Train_1 = None
@@ -123,27 +123,32 @@ for i_row in range(len(X_test_1)):
         k[2] = 1
         i_sum = i_sum + 1
 
-    print(k)
-    if ((k[0] == 1) & (k[1] == 0) & (k[2] == 0)):
-        errors_eval.append(vincenty(pred1[0], Y_test_combined[i_row, :]))
-    if ((k[0] == 0) & (k[1] == 1) & (k[2] == 0)):
-        errors_eval.append(vincenty(pred2[0], Y_test_combined[i_row, :]))
-    if ((k[0] == 0) & (k[1] == 0) & (k[2] == 1)):
-        errors_eval.append(vincenty(pred3[0], Y_test_combined[i_row, :]))
+    if ((k[0] == 0) & (k[1] == 0) & (k[2] == 0)):
+        print('error--------------------------------')
 
-    if ((k[0] == 1) & (k[1] == 0) & (k[2] == 1)):
-        pred_1_3 = (pred1[0]+pred3[0])/2
-        errors_eval.append(vincenty(pred_1_3, Y_test_combined[i_row, :]))
-    if ((k[0] == 1) & (k[1] == 1) & (k[2] == 0)):
-        pred_1_2 = (pred1[0] + pred2[0]) / 2
-        errors_eval.append(vincenty(pred_1_2, Y_test_combined[i_row, :]))
-    if ((k[0] == 0) & (k[1] == 1) & (k[2] == 1)):
-        pred_2_3 = (pred2[0] + pred3[0]) / 2
-        errors_eval.append(vincenty(pred_2_3, Y_test_combined[i_row, :]))
+    errors_eval.append(vincenty(pred3[0], Y_test_combined[i_row, :]))
 
-    if ((k[0] == 1) & (k[1] == 1) & (k[2] == 1)):
-        pred_1_2_3 = (pred1[0] + pred2[0]+ pred3[0]) / 3
-        errors_eval.append(vincenty(pred_1_2_3, Y_test_combined[i_row, :]))
+    # if ((k[0] == 1) & (k[1] == 0) & (k[2] == 0)):
+    #     errors_eval.append(vincenty(pred1[0], Y_test_combined[i_row, :]))
+    # if ((k[0] == 0) & (k[1] == 1) & (k[2] == 0)):
+    #     errors_eval.append(vincenty(pred2[0], Y_test_combined[i_row, :]))
+    # if ((k[0] == 0) & (k[1] == 0) & (k[2] == 1)):
+    #     errors_eval.append(vincenty(pred3[0], Y_test_combined[i_row, :]))
+    #
+    # if ((k[0] == 1) & (k[1] == 0) & (k[2] == 1)):
+    #     pred_1_3 = (pred1[0]+pred3[0])/2
+    #     print((pred_1_3))
+    #     errors_eval.append(vincenty(pred_1_3, Y_test_combined[i_row, :]))
+    # if ((k[0] == 1) & (k[1] == 1) & (k[2] == 0)):
+    #     pred_1_2 = (pred1[0] + pred2[0]) / 2
+    #     errors_eval.append(vincenty(pred_1_2, Y_test_combined[i_row, :]))
+    # if ((k[0] == 0) & (k[1] == 1) & (k[2] == 1)):
+    #     pred_2_3 = (pred2[0] + pred3[0]) / 2
+    #     errors_eval.append(vincenty(pred_2_3, Y_test_combined[i_row, :]))
+    #
+    # if ((k[0] == 1) & (k[1] == 1) & (k[2] == 1)):
+    #     pred_1_2_3 = (pred1[0] + pred2[0] + pred3[0]) / 3
+    #     errors_eval.append(vincenty(pred_1_2_3, Y_test_combined[i_row, :]))
 
 mean_error = np.mean(errors_eval) * 1000
 median_error = np.median(errors_eval) * 1000
