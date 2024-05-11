@@ -94,27 +94,64 @@ sum_1 = 0
 sum_2 = 0
 sum_3 = 0
 
-
+k = [0, 0, 0]
 for i_row in range(len(X_test_1)):
+    print(i_row/len(X_test_1))
+    i_sum = 0
     x_test_cur = X_test_1[i_row, :]
     pred1 = model1.predict(x_test_cur.reshape(1, -1))
-    if (pred1[0][1])<3.9:
-        print(True)
-print('****************************')
-for i_row in range(len(X_test_2)):
+    if (pred1[0][1]) < 3.9:
+        k[0] = 0
+    else:
+        k[0] = 1
+        i_sum = i_sum + 1
+
     x_test_cur = X_test_2[i_row, :]
     pred2 = model2.predict(x_test_cur.reshape(1, -1))
     if ((pred2[0][1]) > 3.9) & ((pred2[0][1]) < 4.1):
-        print(True)
-print('****************************')
+        k[1] = 0
+    else:
+        k[1] = 1
+        i_sum = i_sum + 1
 
-
-for i_row in range(len(X_test_3)):
     x_test_cur = X_test_3[i_row, :]
     pred3 = model3.predict(x_test_cur.reshape(1, -1))
+
     if ((pred3[0][1]) > 4.1):
-        print(True)
-print('****************************')
+        k[2] = 0
+    else:
+        k[2] = 1
+        i_sum = i_sum + 1
+
+    print(k)
+    if ((k[0] == 1) & (k[1] == 0) & (k[2] == 0)):
+        errors_eval.append(vincenty(pred1[0], Y_test_combined[i_row, :]))
+    if ((k[0] == 0) & (k[1] == 1) & (k[2] == 0)):
+        errors_eval.append(vincenty(pred2[0], Y_test_combined[i_row, :]))
+    if ((k[0] == 0) & (k[1] == 0) & (k[2] == 1)):
+        errors_eval.append(vincenty(pred3[0], Y_test_combined[i_row, :]))
+
+    if ((k[0] == 1) & (k[1] == 0) & (k[2] == 1)):
+        pred_1_3 = (pred1[0]+pred3[0])/2
+        errors_eval.append(vincenty(pred_1_3, Y_test_combined[i_row, :]))
+    if ((k[0] == 1) & (k[1] == 1) & (k[2] == 0)):
+        pred_1_2 = (pred1[0] + pred2[0]) / 2
+        errors_eval.append(vincenty(pred_1_2, Y_test_combined[i_row, :]))
+    if ((k[0] == 0) & (k[1] == 1) & (k[2] == 1)):
+        pred_2_3 = (pred2[0] + pred3[0]) / 2
+        errors_eval.append(vincenty(pred_2_3, Y_test_combined[i_row, :]))
+
+    if ((k[0] == 1) & (k[1] == 1) & (k[2] == 1)):
+        pred_1_2_3 = (pred1[0] + pred2[0]+ pred3[0]) / 3
+        errors_eval.append(vincenty(pred_1_2_3, Y_test_combined[i_row, :]))
+
+mean_error = np.mean(errors_eval) * 1000
+median_error = np.median(errors_eval) * 1000
+
+print(f"Mean Error: {mean_error} meters")
+print(f"Median Error: {median_error} meters")
+
+
 
 
 #     k = np.array([sum_1, sum_2, sum_3])
