@@ -87,7 +87,7 @@ list_fualt_not = [9, 10, 11, 12, 17, 19, 20, 22,
                   37, 38, 39, 40, 43, 44, 59, 60, 64, 68, 73, 109]
 
 k = [3.6, 3.7, 3.8, 3.9, 4, 4.1, 4.2]
-for random_seed_number in range(40, 60, 1):
+for random_seed_number in range(42, 43, 1):
     regressor = RandomForestRegressor()
     regressor_1 = RandomForestRegressor()
     regressor_2 = RandomForestRegressor()
@@ -123,23 +123,52 @@ for random_seed_number in range(40, 60, 1):
     X_train_combined_2, X_test_combined_2 = list_to_data(list_2, X_train_combined, X_test_combined)
     X_train_combined_3, X_test_combined_3 = list_to_data(list_3, X_train_combined, X_test_combined)
 
-    for i_pre in [0, 1, 2]:
-        X_train_combined_p, t = preproces(X_train_combined_all, i_pre)
-        X_train_combined_p_1, t = preproces(X_train_combined_1, i_pre)
-        X_train_combined_p_2, t = preproces(X_train_combined_2, i_pre)
-        X_train_combined_p_3, t = preproces(X_train_combined_3, i_pre)
+    index_1 = (Y_train_combined[:, 1] < 3.9)
+    index_2 = ((3.9 < Y_train_combined[:, 1]) & (Y_train_combined[:, 1] < 4.1))
+    index_3 = (4.1 < Y_train_combined[:, 1])
 
-        X_test_combined_p, t = preproces(X_test_combined_all, i_pre)
-        X_test_combined_p_1, t = preproces(X_test_combined_1, i_pre)
-        X_test_combined_p_2, t = preproces(X_test_combined_2, i_pre)
-        X_test_combined_p_3, t = preproces(X_test_combined_3, i_pre)
+
+# **************************************************************
+    X_train_combined_1 = X_train_combined_1[index_1, :]
+    X_train_combined_2 = X_train_combined_2[index_2, :]
+    X_train_combined_3 = X_train_combined_3[index_3, :]
+
+    Y_train_combined_1 = Y_train_combined[index_1, :]
+    Y_train_combined_2 = Y_train_combined[index_2, :]
+    Y_train_combined_3 = Y_train_combined[index_3, :]
+
+
+
+# **************************************************************
+
+
+    for i_pre in [0, 1, 2]:
+        # X_train_combined_p, t = preproces(X_train_combined_all, i_pre)
+        # X_train_combined_p_1, t = preproces(X_train_combined_1, i_pre)
+        # X_train_combined_p_2, t = preproces(X_train_combined_2, i_pre)
+        # X_train_combined_p_3, t = preproces(X_train_combined_3, i_pre)
+        #
+        # X_test_combined_p, t = preproces(X_test_combined_all, i_pre)
+        # X_test_combined_p_1, t = preproces(X_test_combined_1, i_pre)
+        # X_test_combined_p_2, t = preproces(X_test_combined_2, i_pre)
+        # X_test_combined_p_3, t = preproces(X_test_combined_3, i_pre)
+
+        X_train_combined_p = X_train_combined_all
+        X_train_combined_p_1 = X_train_combined_1
+        X_train_combined_p_2 = X_train_combined_2
+        X_train_combined_p_3 = X_train_combined_3
+
+        X_test_combined_p= X_test_combined_all
+        X_test_combined_p_1 = X_test_combined_1
+        X_test_combined_p_2= X_test_combined_2
+        X_test_combined_p_3= X_test_combined_3
 
         regressor.fit(X_train_combined_p, Y_train_combined)
         pred = regressor.predict(X_test_combined_p)
 
-        regressor_1.fit(X_train_combined_p_1, Y_train_combined)
-        regressor_2.fit(X_train_combined_p_2, Y_train_combined)
-        regressor_3.fit(X_train_combined_p_3, Y_train_combined)
+        regressor_1.fit(X_train_combined_p_1, Y_train_combined_1)
+        regressor_2.fit(X_train_combined_p_2, Y_train_combined_2)
+        regressor_3.fit(X_train_combined_p_3, Y_train_combined_3)
 
         pred_1 = regressor_1.predict(X_test_combined_p_1)
         pred_2 = regressor_2.predict(X_test_combined_p_2)
