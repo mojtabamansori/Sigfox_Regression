@@ -4,8 +4,8 @@ In this project, we are working on the SigFox data set that was collected in Ita
 
 The files contain three parts:
 
-1- Pre-processing
+1- Pre-processing (start with "PRE")
 
-2- Models
+2- Models (start with "M")
 
-3- Charts
+3- Charts (start with "P")
