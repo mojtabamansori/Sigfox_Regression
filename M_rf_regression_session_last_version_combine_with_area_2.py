@@ -157,7 +157,7 @@ for n_1 in range(75, 76, 5):
                 # index_2 = ((3.94 < Y_train_combined[:, 1]) & (Y_train_combined[:, 1] < 4.03))
                 index_3 = (4.1 < Y_train_combined[:, 1])
 
-
+                print(len(index_1))
             # **************************************************************
 
                 X_train_combined_1 = X_train_combined_1[index_1, :]

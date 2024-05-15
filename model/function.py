@@ -1,17 +1,8 @@
 import numpy as np
 import pandas as pd
-import numpy as np
-from sklearn.impute import SimpleImputer
-import numpy as np
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import r2_score
 from vincenty import vincenty
-from sklearn.svm import SVR
 
-# from M_mean_std import  numebers_section
-# print(f"numebers_section is {numebers_section}")
 def f_e_mean_std(input_model, output_model, n_s):
     data_plot_mean = np.zeros((n_s, 137))
     data_plot_std = np.zeros((n_s, 137))
@@ -29,7 +20,6 @@ def f_e_mean_std(input_model, output_model, n_s):
 
     getway_useful = []
     for number_getway in range(137):
-        getway_useful.append(1)
         for number_sections in range(n_s):
             if data_plot_mean[number_sections, number_getway] != -200:
                 getway_useful.append(number_sections)
@@ -37,19 +27,33 @@ def f_e_mean_std(input_model, output_model, n_s):
     return getway_useful
 
 
-def list_getways(useful_section_getway,n_s):
+def list_getways(useful_section_getway, n_s):
     lists = {}
     flags = {}
     for i in range(n_s):
-        lists['list_' + str(i)] = []
-        flags['flag_' + str(i)] = 0
-        for name_section in useful_section_getway:
-            if flags[f'flag_{i}'] == 1:
-                lists[f'list_{i}'].append(name_section)
-                flags[f'flag_{i}'] = 0
-            if name_section == 0:
-                flags[f'flag_{i}'] = 1
-    for i in range(n_s):
+        lists['list_' + str(i+1)] = []
+    #     flags['flag_' + str(i)] = 0
+    for name_section, gateway in zip(useful_section_getway[0::2], useful_section_getway[1::2]):
+        lists[f"list_{name_section+1}"].append(gateway)
+        # if flags[f'flag_{i}'] == 1:
+        #     lists[f'list_{i+1}'].append(name_section)
+        #     flags[f'flag_{i}'] = 0
+        # if name_section == 0:
+        #     flags[f'flag_{i}'] = 1
+    lists["list_0"] = [9, 10, 11, 12, 17,
+                  19, 20, 22, 26, 30,
+                  58, 61, 66, 70, 71,
+                  72, 75, 82, 83, 84,
+                  85, 86, 88, 89, 90, 91,
+                  92, 94, 96, 97, 99, 100,
+                  101, 103, 104, 105, 107,
+                  110, 118, 119, 28, 24, 18,
+                  62, 102, 126, 0, 1, 2, 4,
+                  6, 7, 8, 13, 14, 15, 16,
+                  21, 29, 31, 32, 33,
+                  36, 37, 38, 39, 40, 43,
+                  44, 59, 60, 64, 68, 73, 109]
+    for i in range(n_s+1):
         lists[f"list_{i}"] = np.unique(np.array(lists[f"list_{i}"]))
     return lists
 
@@ -65,16 +69,17 @@ def preproces(x, number):
     return X_current, number
 
 
-def Label_area(pre):
-    pr = pre[:, 1].copy()
-    for i in range(len(pr)):
-        if pr[i] < 3.94:
-            pr[i] = 0
-        if ((pr[i] > 3.94) & (pr[i] < 4.03)):
-            pr[i] = 1
-        if pr[i] > 4.03:
-            pr[i] = 2
-    return pr
+def Label_area(pre, n_s, Y_train_combined):
+
+    index = {}
+    for section in range(n_s):
+        index_Y = pre[:, 1]
+        Max_getway = np.max(np.max(index_Y))
+        min_getway = np.min(np.min(index_Y))
+        step = (Max_getway - min_getway) / n_s
+        index['model_' + str(section)] = (((min_getway + (step * section)) < index_Y) & ((min_getway + (step * (section + 1))) > index_Y))
+
+    return index
 
 
 def list_to_data(list, X_train_combined, X_test_combined):
