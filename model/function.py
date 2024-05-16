@@ -21,6 +21,11 @@ def f_e_mean_std(input_model, output_model, n_s):
     getway_useful = []
     for number_getway in range(137):
         for number_sections in range(n_s):
+            if data_plot_mean[number_sections, number_getway] == -200:
+                if data_plot_std[number_sections, number_getway] != 0:
+                    getway_useful.append(number_sections)
+                    getway_useful.append(number_getway)
+
             if data_plot_mean[number_sections, number_getway] != -200:
                 getway_useful.append(number_sections)
                 getway_useful.append(number_getway)
