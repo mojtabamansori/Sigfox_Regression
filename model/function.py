@@ -29,17 +29,11 @@ def f_e_mean_std(input_model, output_model, n_s):
 
 def list_getways(useful_section_getway, n_s):
     lists = {}
-    flags = {}
     for i in range(n_s):
         lists['list_' + str(i+1)] = []
-    #     flags['flag_' + str(i)] = 0
     for name_section, gateway in zip(useful_section_getway[0::2], useful_section_getway[1::2]):
         lists[f"list_{name_section+1}"].append(gateway)
-        # if flags[f'flag_{i}'] == 1:
-        #     lists[f'list_{i+1}'].append(name_section)
-        #     flags[f'flag_{i}'] = 0
-        # if name_section == 0:
-        #     flags[f'flag_{i}'] = 1
+
     lists["list_0"] = [9, 10, 11, 12, 17,
                   19, 20, 22, 26, 30,
                   58, 61, 66, 70, 71,
@@ -78,12 +72,11 @@ def Label_area(pre, n_s, Y_train_combined):
         min_getway = np.min(np.min(index_Y))
         step = (Max_getway - min_getway) / n_s
         index['model_' + str(section)] = (((min_getway + (step * section)) < index_Y) & ((min_getway + (step * (section + 1))) > index_Y))
-        P['model_' + str(section)] = (((min_getway + (step * section)) < index_Y) & ((min_getway + (step * (section + 1))) > index_Y))
-    for section in range(n_s):
-        for ii in range(len(index['model_' + str(section)])):
-            P['model_' + str(section)][index['model_' + str(section)]] = section
-            print(P['model_' + str(section)][index['model_' + str(section)]])
-    return index
+        P['model_' + str(section)] = index['model_' + str(section)].copy()
+        P['model_' + str(section)][P['model_' + str(section)]] = section
+        P['model_' + str(section)] = np.where(P['model_' + str(section)], section, 0)
+    return P
+
 
 
 def list_to_data(list, X_train_combined, X_test_combined):
