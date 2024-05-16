@@ -6,15 +6,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 
 
-numebers_section = 5
+numebers_section = 2
 dataset = np.array(pd.read_csv(f'..\dataset\Orginal.csv'))
 X, Y = dataset[:, :137], dataset[:, 138:]
 useful_section_getway = f_e_mean_std(X, Y, numebers_section)
 lists = list_getways(useful_section_getway, numebers_section)
 
-list_1 = lists['list_0']
-list_2 = lists['list_1']
-list_3 = lists['list_2']
 
 list_fualt_not = [9, 10, 11, 12, 17,
                   19, 20, 22, 26, 30,
@@ -92,7 +89,6 @@ for i_model in range(numebers_section+1):
         index['model_' + str(i_model)] = (((min_getway + (step * section)) < index_Y) & ((min_getway + (step * (section + 1))) > index_Y))
 
     a = index['model_' + str(i_model)]
-
     X_Train_combine['X_Train_combine_' + str(i_model)] = X_Train_combine['X_Train_combine_' + str(i_model)][a, :]
     Y_Train_combine['Y_Train_combine_' + str(i_model)] = Y_train_combined[a, :]
 for i_pre in [0, 1, 2]:
@@ -104,17 +100,23 @@ for i_pre in [0, 1, 2]:
 
         if i_model == 0:
             Models[f'regressor_{i_model}'].fit(X_train_combined_p, Y_train_combined)
-            Preds[f'Pred_0'] = Models[f'regressor_{i_model}'].predict(X_test_combined_p)
+            Preds[f'Pred_0'] = Models[f'regressor_0'].predict(X_test_combined_p)
             labe_are = Label_area(Preds[f'Pred_0'], numebers_section, Y_train_combined)
             a = evaluation(Y_test_combined, Preds[f'Pred_0'], random_seed_number, i_pre)
         else:
-            Models[f'regressor_{i_model}'].fit(X_Train_combine_p['X_Train_combine_' + str(i_model)], Y_Train_combine['Y_Train_combine_' + str(i_model)])
-            Preds[f'Pred_{i_model}'] = Models[f'regressor_{i_model}'].predict(X_Test_combine_p['X_Train_combine_' + str(i_model)])
-            Preds_section[f'Pred_{i_model}'] = Preds[f'Pred_{i_model}'][labe_are['model_' + str(i_model-1)] == (i_model-1)]
-            y_section[f'y_{i_model}'] = Y_test_combined[labe_are['model_' + str(i_model-1)] == (i_model-1)]
+            Models[f'regressor_{i_model}'].fit(X_Train_combine_p['X_Train_combine_' + str(i_model)],
+                                               Y_Train_combine['Y_Train_combine_' + str(i_model)])
+            Preds[f'Pred_{i_model}'] = Models[f'regressor_{i_model}'].predict(
+                X_Test_combine_p['X_Train_combine_' + str(i_model)])
 
-            for i_number_label in range(len(X_test_combined)):
-                if labe_are[f"model_{i_model - 1}"][i_number_label]:
-                    Preds[f'Pred_0'][i_number_label, :] = Preds[f'Pred_{i_model}'][i_number_label, :]
-            b = evaluation(Y_test_combined, Preds[f'Pred_0'], random_seed_number, i_pre)
-            print(b, a, "\n")
+            # Preds_section[f'Pred_{i_model}'] = Preds[f'Pred_{i_model}'][labe_are['model_' + str(i_model-1)] == (i_model-1)]
+            # y_section[f'y_{i_model}'] = Y_test_combined[labe_are['model_' + str(i_model-1)] == (i_model-1)]
+
+    for i_model in range(1, numebers_section + 1):
+
+        for i_number_label in range(len(X_test_combined)):
+            if labe_are[f"model_{i_model-1}"][i_number_label] == i_model:
+                Preds[f'Pred_0'][i_number_label, :] = Preds[f'Pred_{i_model}'][i_number_label, :]
+
+    b = evaluation(Y_test_combined, Preds[f'Pred_0'], random_seed_number, i_pre)
+    print(b, a, "\n")

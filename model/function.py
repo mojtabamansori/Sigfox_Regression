@@ -70,15 +70,19 @@ def preproces(x, number):
 
 
 def Label_area(pre, n_s, Y_train_combined):
-
     index = {}
+    P = {}
     for section in range(n_s):
         index_Y = pre[:, 1]
         Max_getway = np.max(np.max(index_Y))
         min_getway = np.min(np.min(index_Y))
         step = (Max_getway - min_getway) / n_s
         index['model_' + str(section)] = (((min_getway + (step * section)) < index_Y) & ((min_getway + (step * (section + 1))) > index_Y))
-
+        P['model_' + str(section)] = (((min_getway + (step * section)) < index_Y) & ((min_getway + (step * (section + 1))) > index_Y))
+    for section in range(n_s):
+        for ii in range(len(index['model_' + str(section)])):
+            P['model_' + str(section)][index['model_' + str(section)]] = section
+            print(P['model_' + str(section)][index['model_' + str(section)]])
     return index
 
 
