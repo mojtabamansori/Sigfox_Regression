@@ -5,13 +5,34 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 
-for i_m_o in range(1,20):
+def list_change_section(lists_old, number_section_old, number_section_new):
+    res = np.zeros((number_section_old, number_section_old))
+    for i in range(1, number_section_old):
+        for j in range(i + 1, number_section_old):
+            number_multiply = np.intersect1d(lists_old[f"list_{i}"], lists_old[f"list_{j}"])
+            res[i, j] = len(number_multiply)
+
+    a = np.unravel_index(np.argmax(res), res.shape)
+    list_new_or = np.unique(np.concatenate((lists_old[f"list_{a[0]}"],lists_old[f"list_{a[1]}"]),axis=0))
+    lists_old.pop(f"list_{a[0]}")
+    lists_old.pop(f"list_{a[1]}")
+    lists_old[f"list_{a[0]}_{a[1]}"] = list_new_or
+    if ((len(lists_old.keys())) == number_section_new):
+        list_change_section()
+
+
+
+
+
+    # return lists_new, number_section_new
+for i_m_o in range(20, 21):
     print(i_m_o)
     numebers_section = i_m_o
     dataset = np.array(pd.read_csv(f'..\dataset\Orginal.csv'))
     X, Y = dataset[:, :137], dataset[:, 138:]
     useful_section_getway = f_e_mean_std(X, Y, numebers_section)
     lists = list_getways(useful_section_getway, numebers_section)
+    lists, numebers_section = list_change_section(lists, numebers_section,3)
     list_fualt_not = [9, 10, 11, 12, 17,
                       19, 20, 22, 26, 30,
                       58, 61, 66, 70, 71,
