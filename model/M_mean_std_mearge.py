@@ -5,50 +5,8 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 
-def rename_list(list_with_name_old):
-    list_with_name_new = {}
-    list_0 = list_with_name_old['list_0']
-    list_with_name_old.pop(f"list_0")
-    a = []
-    for i in list_with_name_old.keys():
-        a.append(i)
-    a = np.array(a)
-    for i in range(len(list_with_name_old.keys())):
-        list_with_name_new[f'list_{i+1}'] = list_with_name_old[a[i]]
-    list_with_name_new[f'list_0'] = list_0
-    return list_with_name_new
-
-def list_change_section(lists_old, number_section_old, i_1, k):
-    res = np.zeros((number_section_old, number_section_old))
-    for i in range(1, number_section_old):
-        for j in range(i + 1, number_section_old):
-            number_multiply = np.intersect1d(lists_old[f"list_{i}"], lists_old[f"list_{j}"])
-            res[i, j] = len(number_multiply)
-
-    a = np.unravel_index(np.argmax(res), res.shape)
-    list_new_or = np.unique(np.concatenate((lists_old[f"list_{a[0]}"],lists_old[f"list_{a[1]}"]),axis=0))
-    lists_old.pop(f"list_{a[0]}")
-    lists_old.pop(f"list_{a[1]}")
-    lists_old[f"list_{a[0]}_{a[1]}"] = list_new_or
-    lists_old = rename_list(lists_old)
-    k.append(i_1)
-    k.append(a[0])
-    k.append(a[1])
-
-    return lists_old, (number_section_old-1)
-
-
-
-
 numebers_section = 20
-dataset = np.array(pd.read_csv(f'..\dataset\Orginal.csv'))
-X, Y = dataset[:, :137], dataset[:, 138:]
-useful_section_getway = f_e_mean_std(X, Y, numebers_section)
-lists = list_getways(useful_section_getway, numebers_section)
-k =[]
-for i in range(18):
-    lists, numebers_section, k = list_change_section(lists, numebers_section, i, k)
-
+last_numebers_section = 2
 list_fualt_not = [9, 10, 11, 12, 17,
                   19, 20, 22, 26, 30,
                   58, 61, 66, 70, 71,
@@ -62,8 +20,21 @@ list_fualt_not = [9, 10, 11, 12, 17,
                   21, 29, 31, 32, 33,
                   36, 37, 38, 39, 40, 43,
                   44, 59, 60, 64, 68, 73, 109]
-
 k = [3.6, 3.7, 3.8, 3.9, 4, 4.1, 4.2]
+
+dataset = np.array(pd.read_csv(f'..\dataset\Orginal.csv'))
+X, Y = dataset[:, :137], dataset[:, 138:]
+useful_section_getway = f_e_mean_std(X, Y, numebers_section)
+lists = list_getways(useful_section_getway, numebers_section)
+
+list_gateway_mearge =[]
+list_section_data = []
+for i in range(20):
+    list_section_data.append([])
+
+for number_mearge in range(numebers_section - last_numebers_section):
+    lists, numebers_section, list_gateway_mearge = list_change_section(lists, numebers_section, number_mearge, list_gateway_mearge)
+
 
 for random_seed_number in range(42, 43, 1):
     X_train_combined, Y_train_combined = [], []
@@ -115,6 +86,7 @@ for i_model in range(numebers_section+1):
     X_Train_combine['X_Train_combine_'+str(i_model)],\
     X_Test_combine['X_Test_combine_'+str(i_model)] = list_to_data(lists['list_' + str(i_model)],
                                                                       X_train_combined, X_test_combined)
+    #*******************************************************************************************************************
     for section in range(numebers_section):
         index_Y = Y_train_combined[:, 1]
         Max_getway = np.max(np.max(index_Y))
@@ -142,9 +114,6 @@ for i_pre in [0, 1, 2]:
                                                Y_Train_combine['Y_Train_combine_' + str(i_model)])
             Preds[f'Pred_{i_model}'] = Models[f'regressor_{i_model}'].predict(
                 X_Test_combine_p['X_Train_combine_' + str(i_model)])
-
-            # Preds_section[f'Pred_{i_model}'] = Preds[f'Pred_{i_model}'][labe_are['model_' + str(i_model-1)] == (i_model-1)]
-            # y_section[f'y_{i_model}'] = Y_test_combined[labe_are['model_' + str(i_model-1)] == (i_model-1)]
 
     for i_model in range(1, numebers_section + 1):
         for i_number_label in range(len(X_test_combined)):
