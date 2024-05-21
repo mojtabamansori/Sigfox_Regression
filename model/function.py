@@ -2,6 +2,10 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import r2_score
 from vincenty import vincenty
+from sklearn.model_selection import train_test_split
+from sklearn.impute import SimpleImputer
+
+
 
 def rename_list(list_with_name_old):
     list_with_name_new = {}
@@ -19,9 +23,55 @@ def rename_list(list_with_name_old):
 def section_true(section_list, Y_true, list_mearge):
     a = list_mearge[1]-1
     b = list_mearge[2]-1
-    index_a = (((np.array(section_list[a])[0]) < (Y_true[:,1])) & ((Y_true[:,1]) < (np.array(section_list[a])[1])))
-    index_b = (((np.array(section_list[b])[0]) < (Y_true[:,1])) & ((Y_true[:,1]) < (np.array(section_list[b])[1])))
-    return index_a, index_b
+    index_a = (((np.array(section_list[a])[0]) < (Y_true[:, 1])) & ((Y_true[:, 1]) < (np.array(section_list[a])[1])))
+    index_b = (((np.array(section_list[b])[0]) < (Y_true[:, 1])) & ((Y_true[:, 1]) < (np.array(section_list[b])[1])))
+    return (index_a | index_b)
+
+def section_true_not_mearge(section_list, Y_true, i_model):
+    if (i_model != 0) and (i_model != 8):
+        a = i_model
+        index_a = (((np.array(section_list[a])[0]) < (Y_true[:,1])) & ((Y_true[:,1]) < (np.array(section_list[a])[1])))
+
+        return index_a
+
+def load_date_def(list_random_seed):
+    k = [3.6, 3.7, 3.8, 3.9, 4, 4.1, 4.2]
+    for random_seed_number in list_random_seed:
+        X_train_combined, Y_train_combined = [], []
+        X_test_combined, Y_test_combined = [], []
+        for range_longitude in k:
+            file_name = f"../session/data_{range_longitude:.1f}_to_{(range_longitude + 0.1):.1f}.csv"
+            df = pd.read_csv(file_name)
+            data_array = df.to_numpy()
+            X_current = data_array[:, :137]
+            Y_current = data_array[:, 137:]
+            X_train_temp, X_test_temp, \
+                Y_train_temp, Y_test_temp = train_test_split(X_current, Y_current,
+                                                             test_size=0.3,
+                                                             random_state=random_seed_number)
+
+            imputer = SimpleImputer(strategy='mean')
+            X_train_temp_imputed = imputer.fit_transform(X_train_temp)
+            X_test_temp_imputed = imputer.transform(X_test_temp)
+            X_train_combined.append(X_train_temp_imputed)
+            Y_train_combined.append(Y_train_temp)
+            X_test_combined.append(X_test_temp_imputed)
+            Y_test_combined.append(Y_test_temp)
+
+        X_train_combined = np.concatenate(X_train_combined, axis=0)
+        Y_train_combined = np.concatenate(Y_train_combined, axis=0)
+        X_test_combined = np.concatenate(X_test_combined, axis=0)
+        Y_test_combined = np.concatenate(Y_test_combined, axis=0)
+
+        return X_train_combined, Y_train_combined, X_test_combined, Y_test_combined
+
+
+def index_section(numebers_section, Y_train_combined, i_model, index, section_list):
+    index_Y = Y_train_combined[:, 1]
+    index['model_0'] = ((3.0 < index_Y) & (5.0 > index_Y))
+    for i_model in range(0, numebers_section):
+        index['model_' + str(i_model+1)] = (((section_list[i_model, 0]) < index_Y) & ((section_list[i_model, 1]) > index_Y))
+    return index
 
 def return_section_list(numebers_section,Max_getway,min_getway):
     section_list = np.zeros((numebers_section - 1, 2))
@@ -36,7 +86,19 @@ def return_section_list(numebers_section,Max_getway,min_getway):
     return section_list
 
 
-def list_change_section(lists_old, number_section_old, i_1, k):
+def list_change_section_r1(lists_old, number_section_old, i_1, k, section_list_old):
+    res = np.zeros((number_section_old, number_section_old))
+    for i in range(1, number_section_old):
+        for j in range(i + 1, number_section_old):
+            number_multiply = np.intersect1d(lists_old[f"list_{i}"], lists_old[f"list_{j}"])
+            res[i, j] = len(number_multiply)
+    if 1 < np.max(res):
+        return 0
+    else:
+        return 5
+
+
+def list_change_section(lists_old, number_section_old, i_1, k, section_list_old):
     res = np.zeros((number_section_old, number_section_old))
     for i in range(1, number_section_old):
         for j in range(i + 1, number_section_old):
@@ -47,13 +109,26 @@ def list_change_section(lists_old, number_section_old, i_1, k):
     list_new_or = np.unique(np.concatenate((lists_old[f"list_{a[0]}"], lists_old[f"list_{a[1]}"]), axis=0))
     lists_old.pop(f"list_{a[0]}")
     lists_old.pop(f"list_{a[1]}")
+
+    section_list_new = np.copy(section_list_old)
+    temp = len(section_list_new) - 1
+    a_index_new = section_list_new[a[0], 0]
+    b_index_new = section_list_new[a[1], 1]
+    section_list_new = np.delete(section_list_new, a[0], 0)
+    section_list_new = np.delete(section_list_new, (a[1] - 1), 0)
+    kss = np.zeros((temp, 2))
     lists_old[f"list_{a[0]}_{a[1]}"] = list_new_or
     lists_old = rename_list(lists_old)
+    kss[0:(temp - 1), :] = section_list_new
+    kss[temp - 1, 0] = a_index_new
+    kss[temp - 1, 1] = b_index_new
+
     k.append(i_1)
     k.append(a[0])
     k.append(a[1])
 
-    return lists_old, (number_section_old - 1), k
+    return lists_old, (number_section_old - 1), k, kss
+
 def f_e_mean_std(input_model, output_model, n_s):
     data_plot_mean = np.zeros((n_s, 137))
     data_plot_std = np.zeros((n_s, 137))
@@ -133,7 +208,23 @@ def Label_area(pre, n_s, Y_train_combined):
         P['model_' + str(section)] = np.where(P['model_' + str(section)], section, 0)
     return P
 
+def index_section(numebers_section, Y_train_combined, i_model, index, section_list):
+    index_Y = Y_train_combined[:, 1]
+    index['model_0'] = ((3.0 < index_Y) & (5.0 > index_Y))
+    for i_model in range(0, numebers_section):
+        index['model_' + str(i_model+1)] = (((section_list[i_model, 0]) < index_Y) & ((section_list[i_model, 1]) > index_Y))
+    return index
 
+def Label_area_new_way(pre, n_s, section_list):
+    index = {}
+    P = {}
+    for section in range(n_s):
+        index_Y = pre[:, 1]
+        index['model_' + str(section)] = (((section_list[section, 0]) < index_Y) & ((section_list[section, 1]) > index_Y))
+        P['model_' + str(section)] = index['model_' + str(section)].copy()
+        P['model_' + str(section)][P['model_' + str(section)]] = section
+        P['model_' + str(section)] = np.where(P['model_' + str(section)], section, 0)
+    return P
 
 def list_to_data(list, X_train_combined, X_test_combined):
     X_Train_1 = None
