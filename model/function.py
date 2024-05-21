@@ -17,7 +17,25 @@ def rename_list(list_with_name_old):
     return list_with_name_new
 
 def section_true(section_list, Y_true, list_mearge):
-    #list bgire v bargardone true ha ro
+    a = list_mearge[1]-1
+    b = list_mearge[2]-1
+    index_a = (((np.array(section_list[a])[0]) < (Y_true[:,1])) & ((Y_true[:,1]) < (np.array(section_list[a])[1])))
+    index_b = (((np.array(section_list[b])[0]) < (Y_true[:,1])) & ((Y_true[:,1]) < (np.array(section_list[b])[1])))
+    return index_a, index_b
+
+def return_section_list(numebers_section,Max_getway,min_getway):
+    section_list = np.zeros((numebers_section - 1, 2))
+    for li, section in enumerate(range(numebers_section - 1)):
+        step = (Max_getway - min_getway) / numebers_section
+        if li == 0:
+            section_list[li, 0] = (min_getway + (step * section))
+        else:
+            section_list[li - 1, 1] = (min_getway + (step * section))
+            section_list[li, 0] = (min_getway + (step * section))
+        section_list[(numebers_section - 2), 1] = Max_getway
+    return section_list
+
+
 def list_change_section(lists_old, number_section_old, i_1, k):
     res = np.zeros((number_section_old, number_section_old))
     for i in range(1, number_section_old):

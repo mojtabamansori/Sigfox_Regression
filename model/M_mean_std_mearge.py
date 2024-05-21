@@ -5,7 +5,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 
-numebers_section = 20
+numebers_section = 3
 last_numebers_section = 2
 list_fualt_not = [9, 10, 11, 12, 17,
                   19, 20, 22, 26, 30,
@@ -24,6 +24,9 @@ k = [3.6, 3.7, 3.8, 3.9, 4, 4.1, 4.2]
 
 dataset = np.array(pd.read_csv(f'..\dataset\Orginal.csv'))
 X, Y = dataset[:, :137], dataset[:, 138:]
+
+section_list = return_section_list(numebers_section, np.max(np.max(Y[:, 1])), np.min(np.min(Y[:, 1])))
+
 useful_section_getway = f_e_mean_std(X, Y, numebers_section)
 lists = list_getways(useful_section_getway, numebers_section)
 
@@ -87,19 +90,19 @@ for i_model in range(numebers_section+1):
     X_Test_combine['X_Test_combine_'+str(i_model)] = list_to_data(lists['list_' + str(i_model)],
                                                                       X_train_combined, X_test_combined)
     #*******************************************************************************************************************
-
-    section_true(section_list, Y_train_combined[:, 1], list_gateway_mearge)
+    index_a, index_b = section_true(section_list, Y_train_combined, list_gateway_mearge)
     #*******************************************************************************************************************
-    for section in range(numebers_section):
+    for section in range(numebers_section+1):
         index_Y = Y_train_combined[:, 1]
         Max_getway = np.max(np.max(index_Y))
         min_getway = np.min(np.min(index_Y))
         step = (Max_getway - min_getway) / numebers_section
-        index['model_' + str(i_model)] = (((min_getway + (step * section)) < index_Y) & ((min_getway + (step * (section + 1))) > index_Y))
+        index['model_' + str(i_model)] = index_a | index_b
 
     a = index['model_' + str(i_model)]
     X_Train_combine['X_Train_combine_' + str(i_model)] = X_Train_combine['X_Train_combine_' + str(i_model)][a, :]
     Y_Train_combine['Y_Train_combine_' + str(i_model)] = Y_train_combined[a, :]
+
 for i_pre in [0, 1, 2]:
     for i_model in range(numebers_section+1):
         X_train_combined_p, t = preproces(X_train_combined_all, i_pre)
