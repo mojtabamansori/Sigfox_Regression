@@ -16,7 +16,8 @@ def rename_list(list_with_name_old):
     list_with_name_new[f'list_0'] = list_0
     return list_with_name_new
 
-
+def section_true(section_list, Y_true, list_mearge):
+    #list bgire v bargardone true ha ro
 def list_change_section(lists_old, number_section_old, i_1, k):
     res = np.zeros((number_section_old, number_section_old))
     for i in range(1, number_section_old):

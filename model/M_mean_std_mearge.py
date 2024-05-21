@@ -87,6 +87,9 @@ for i_model in range(numebers_section+1):
     X_Test_combine['X_Test_combine_'+str(i_model)] = list_to_data(lists['list_' + str(i_model)],
                                                                       X_train_combined, X_test_combined)
     #*******************************************************************************************************************
+
+    section_true(section_list, Y_train_combined[:, 1], list_gateway_mearge)
+    #*******************************************************************************************************************
     for section in range(numebers_section):
         index_Y = Y_train_combined[:, 1]
         Max_getway = np.max(np.max(index_Y))
