@@ -7,12 +7,12 @@ def rename_list(list_with_name_old):
     list_with_name_new = {}
     list_0 = list_with_name_old['list_0']
     list_with_name_old.pop(f"list_0")
-    a = []
+    a_0 = []
     for i in list_with_name_old.keys():
-        a.append(i)
-    a = np.array(a)
+        a_0.append(i)
+    a_0 = np.array(a_0)
     for i in range(len(list_with_name_old.keys())):
-        list_with_name_new[f'list_{i+1}'] = list_with_name_old[a[i]]
+        list_with_name_new[f'list_{i+1}'] = list_with_name_old[a_0[i]]
     list_with_name_new[f'list_0'] = list_0
     return list_with_name_new
 

@@ -5,7 +5,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor
 
-numebers_section = 20
+numebers_section = 30
 last_numebers_section = 2
 list_fualt_not = [9, 10, 11, 12, 17,
                   19, 20, 22, 26, 30,
@@ -20,21 +20,11 @@ list_fualt_not = [9, 10, 11, 12, 17,
                   21, 29, 31, 32, 33,
                   36, 37, 38, 39, 40, 43,
                   44, 59, 60, 64, 68, 73, 109]
+
 k = [3.6, 3.7, 3.8, 3.9, 4, 4.1, 4.2]
 
 dataset = np.array(pd.read_csv(f'..\dataset\Orginal.csv'))
 X, Y = dataset[:, :137], dataset[:, 138:]
-
-section_list = return_section_list(numebers_section, np.max(np.max(Y[:, 1])), np.min(np.min(Y[:, 1])))
-
-useful_section_getway = f_e_mean_std(X, Y, numebers_section)
-lists = list_getways(useful_section_getway, numebers_section)
-
-list_gateway_mearge =[]
-
-for number_mearge in range(numebers_section - last_numebers_section):
-    lists, numebers_section, list_gateway_mearge = list_change_section(lists, numebers_section, number_mearge, list_gateway_mearge)
-
 
 for random_seed_number in range(42, 43, 1):
     X_train_combined, Y_train_combined = [], []
@@ -63,6 +53,14 @@ for random_seed_number in range(42, 43, 1):
     X_test_combined = np.concatenate(X_test_combined, axis=0)
     Y_test_combined = np.concatenate(Y_test_combined, axis=0)
 
+section_list = return_section_list(numebers_section, np.max(np.max(Y_train_combined[:, 1])), np.min(np.min(Y[:, 1])))
+useful_section_getway = f_e_mean_std(X_train_combined, Y_train_combined, numebers_section)
+lists = list_getways(useful_section_getway, numebers_section)
+
+list_gateway_mearge =[]
+for number_mearge in range(numebers_section - last_numebers_section):
+    lists, numebers_section, list_gateway_mearge = list_change_section(lists, numebers_section, number_mearge, list_gateway_mearge)
+print(numebers_section)
 Models = {}
 Preds = {}
 Preds_section = {}
@@ -87,26 +85,21 @@ for i_model in range(numebers_section+1):
     X_Test_combine['X_Test_combine_'+str(i_model)] = list_to_data(lists['list_' + str(i_model)],
                                                                       X_train_combined, X_test_combined)
     #*******************************************************************************************************************
-    index_a, index_b = section_true(section_list, Y_train_combined, list_gateway_mearge)
+    # index_a, index_b = section_true(section_list, Y_train_combined, list_gateway_mearge)
     #*******************************************************************************************************************
-    for section in range(numebers_section+1):
+    for section in range(numebers_section):
         index_Y = Y_train_combined[:, 1]
         Max_getway = np.max(np.max(index_Y))
         min_getway = np.min(np.min(index_Y))
         step = (Max_getway - min_getway) / numebers_section
-        if section != (numebers_section+1):
-            index['model_' + str(i_model)] = (((min_getway + (step * section)) < index_Y) & ((min_getway + (step * (section + 1))) > index_Y))
-        else:
-            index['model_' + str(i_model)] = index_a | index_b
+        index['model_' + str(i_model)] = (((min_getway + (step * section)) < index_Y) & ((min_getway + (step * (section + 1))) > index_Y))
 
     a = index['model_' + str(i_model)]
-    print(a.shape)
     X_Train_combine['X_Train_combine_' + str(i_model)] = X_Train_combine['X_Train_combine_' + str(i_model)][a, :]
     Y_Train_combine['Y_Train_combine_' + str(i_model)] = Y_train_combined[a, :]
 
 for i_pre in [0, 1, 2]:
     for i_model in range(numebers_section+1):
-        print(X_Train_combine['X_Train_combine_' + str(i_model)])
         X_train_combined_p, t = preproces(X_train_combined_all, i_pre)
         X_Train_combine_p['X_Train_combine_' + str(i_model)], t = preproces(X_Train_combine['X_Train_combine_' + str(i_model)], i_pre)
         X_test_combined_p, t = preproces(X_test_combined_all, i_pre)
@@ -117,6 +110,8 @@ for i_pre in [0, 1, 2]:
             Preds[f'Pred_0'] = Models[f'regressor_0'].predict(X_test_combined_p)
             labe_are = Label_area(Preds[f'Pred_0'], numebers_section, Y_train_combined)
             a = evaluation(Y_test_combined, Preds[f'Pred_0'], random_seed_number, i_pre)
+            print(len(X_Test_combine_p['X_Train_combine_' + str(i_model)]))
+
         else:
             Models[f'regressor_{i_model}'].fit(X_Train_combine_p['X_Train_combine_' + str(i_model)],
                                                Y_Train_combine['Y_Train_combine_' + str(i_model)])
