@@ -34,36 +34,48 @@ def section_true_not_mearge(section_list, Y_true, i_model):
 
         return index_a
 
-def load_date_def(list_random_seed):
-    k = [3.6, 3.7, 3.8, 3.9, 4, 4.1, 4.2]
-    for random_seed_number in list_random_seed:
-        X_train_combined, Y_train_combined = [], []
-        X_test_combined, Y_test_combined = [], []
-        for range_longitude in k:
-            file_name = f"../session/data_{range_longitude:.1f}_to_{(range_longitude + 0.1):.1f}.csv"
-            df = pd.read_csv(file_name)
-            data_array = df.to_numpy()
-            X_current = data_array[:, :137]
-            Y_current = data_array[:, 137:]
-            X_train_temp, X_test_temp, \
-                Y_train_temp, Y_test_temp = train_test_split(X_current, Y_current,
-                                                             test_size=0.3,
-                                                             random_state=random_seed_number)
+def load_date_def(list_random_seed, n_s):
+    dataset = np.array(pd.read_csv(f'..\dataset\Orginal.csv'))
+    X, Y = dataset[:, :137], dataset[:, 138:]
 
-            imputer = SimpleImputer(strategy='mean')
-            X_train_temp_imputed = imputer.fit_transform(X_train_temp)
-            X_test_temp_imputed = imputer.transform(X_test_temp)
-            X_train_combined.append(X_train_temp_imputed)
-            Y_train_combined.append(Y_train_temp)
-            X_test_combined.append(X_test_temp_imputed)
-            Y_test_combined.append(Y_test_temp)
+    X_train_combined = None
+    Y_train_combined = None
+    X_test_combined = None
+    Y_test_combined = None
+    flag = 1
+    for section in range(n_s):
+        index_Y = Y[:, 1]
+        Max_getway = np.max(np.max(index_Y))
+        min_getway = np.min(np.min(index_Y))
+        step = (Max_getway - min_getway) / n_s
+        index = (((min_getway + (step * section)) < index_Y) & ((min_getway + (step * (section + 1))) > index_Y))
 
-        X_train_combined = np.concatenate(X_train_combined, axis=0)
-        Y_train_combined = np.concatenate(Y_train_combined, axis=0)
-        X_test_combined = np.concatenate(X_test_combined, axis=0)
-        Y_test_combined = np.concatenate(Y_test_combined, axis=0)
+        X_current = X[index, :]
+        Y_current = Y[index, :]
 
-        return X_train_combined, Y_train_combined, X_test_combined, Y_test_combined
+        X_train_temp, X_test_temp, \
+            Y_train_temp, Y_test_temp = train_test_split(X_current, Y_current,
+                                                         test_size=0.3,
+                                                         random_state=42)
+
+        imputer = SimpleImputer(strategy='mean')
+        X_train_temp_imputed = imputer.fit_transform(X_train_temp)
+        X_test_temp_imputed = imputer.transform(X_test_temp)
+
+        if flag == 1:
+            if X_train_combined == None:
+                X_train_combined = X_train_temp_imputed
+                Y_train_combined = Y_train_temp
+                X_test_combined = X_test_temp_imputed
+                Y_test_combined = Y_test_temp
+                flag = 0
+        if flag == 0:
+            X_train_combined = np.concatenate((X_train_temp_imputed, X_train_combined), axis=0)
+            Y_train_combined = np.concatenate((Y_train_temp, Y_train_combined), axis=0)
+            X_test_combined = np.concatenate((X_test_temp_imputed, X_test_combined), axis=0)
+            Y_test_combined = np.concatenate((Y_test_temp, Y_test_combined), axis=0)
+
+    return X_train_combined, Y_train_combined, X_test_combined, Y_test_combined
 
 
 def index_section(numebers_section, Y_train_combined, i_model, index, section_list):
