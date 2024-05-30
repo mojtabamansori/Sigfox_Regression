@@ -2,7 +2,7 @@ from function import *
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
-for i_sec_to in range(2, 30):
+for i_sec_to in range(10, 11):
     numebers_section = i_sec_to
     last_numebers_section = 2
     list_fualt_not = [9, 10, 11, 12, 17,
@@ -86,3 +86,19 @@ for i_sec_to in range(2, 30):
 
         b = evaluation(Y_test_combined, Preds[f'Pred_0'], 42, 0)
         print(i_sec_to, b, a, "\n")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
