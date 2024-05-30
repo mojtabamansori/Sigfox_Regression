@@ -134,7 +134,6 @@ def list_change_section(lists_old, number_section_old, i_1, k, section_list_old)
     kss[0:(temp - 1), :] = section_list_new
     kss[temp - 1, 0] = min(a_index_new, b_index_new)
     kss[temp - 1, 1] = max(a_index_new, b_index_new)
-    print('come ',kss)
     k.append(i_1)
     k.append(a[0])
     k.append(a[1])
@@ -222,9 +221,18 @@ def Label_area(pre, n_s, Y_train_combined):
 
 def index_section(numebers_section, Y_train_combined, i_model, index, section_list):
     index_Y = Y_train_combined[:, 1]
+    # print("numebers_section",numebers_section)
+    # print("section_list",section_list)
+
     index['model_0'] = ((3.0 < index_Y) & (5.0 > index_Y))
+
     for i_model in range(0, numebers_section):
-        index['model_' + str(i_model+1)] = (((section_list[i_model, 0]) < index_Y) & ((section_list[i_model, 1]) > index_Y))
+        index['model_' + str(i_model + 1)] = []
+        for i in range(len(section_list['start_section'][i_model])):
+            index['model_' + str(i_model + 1)].append(((section_list['start_section'][i_model])[i] < index_Y) & (
+                        (section_list['final_section'][i_model])[i] > index_Y))
+        # index['model_' + str(i_model+1)] = (((section_list[i_model, 0]) < index_Y) & ((section_list[i_model, 1]) > index_Y))
+
     return index
 
 def Label_area_new_way(pre, n_s, section_list):
