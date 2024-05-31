@@ -93,7 +93,7 @@ def list_change_section_r1(lists_old, number_section_old, i_1, k, section_list_o
         for j in range(i + 1, number_section_old):
             number_multiply = np.intersect1d(lists_old[f"list_{i}"], lists_old[f"list_{j}"])
             res[i, j] = len(number_multiply)
-    if 1 < np.max(res):
+    if 7 < np.max(res):
         return 0
     else:
         return 5
