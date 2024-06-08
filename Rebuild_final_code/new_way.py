@@ -4,11 +4,14 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 
 
-
+result = {"orginal":[], "proposed":[],"old_section":[], "new_sction":[], "start_section":[], "Final_section":[] }
+i333 = 0
 for number_section_old in range(2, 20):
     for number_seed_1 in range(42, 52):
+        i333 = i333 + 1
         label_section_value = {"section_number": [], "start_section": [], "final_section": []}
         numbers_section = number_section_old
+        re1 = number_section_old
         last_numbers_section = 2
 
         list_fualt_not = [9, 10, 11, 12, 17,
@@ -33,6 +36,7 @@ for number_section_old in range(2, 20):
             label_section_value["section_number"].append([i_temp])
             label_section_value["start_section"].append([section_list[i_temp, 0]])
             label_section_value["final_section"].append([section_list[i_temp, 1]])
+
         useful_section_getway = f_e_mean_std(X_train_combined, Y_train_combined, numbers_section)
         lists = list_getways(useful_section_getway, numbers_section)
 
@@ -65,6 +69,9 @@ for number_section_old in range(2, 20):
 
         print(number_seed_1, number_section_old, ' is number section and number section after mearg is ===>  ', numbers_section)
         print(f"\n\n{label_section_value}\n\n")
+        re2 = numbers_section
+        re3 = label_section_value["start_section"]
+        re4 = label_section_value["final_section"]
 
         Models, Preds, Preds_section = {}, {}, {}
         y_section, X_Train_combine, X_Train_combine_p = {}, {}, {}
@@ -109,7 +116,17 @@ for number_section_old in range(2, 20):
                         Preds['Pred_0'][i_number_label, :] = Preds[f'Pred_{i_model}'][i_number_label, :]
 
             b = evaluation(Y_test_combined, Preds[f'Pred_0'], 42, 0)
+            re5 = a
+            re6 = b
             print(number_seed_1,number_section_old, b, a, "\n")
         else:
             print('fail')
 
+        (result["orginal"]).append(re1)
+        (result["proposed"]).append(re2)
+        (result["old_section"]).append(re3)
+        (result["new_sction"]).append(re4)
+        (result["start_section"]).append(re5)
+        (result["Final_section"]).append(re6)
+        DF = pd.DataFrame(result)
+        DF.to_csv("data1.csv")

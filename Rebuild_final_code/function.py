@@ -26,7 +26,7 @@ def section_true_not_mearge(section_list, Y_true, i_model):
 def load_date_def(list_random_seed, n_s):
     dataset = np.array(pd.read_csv(f'..\dataset\Orginal.csv'))
     X, Y = dataset[:, :137], dataset[:, 138:]
-
+    n_s = 20
     X_train_combined = None
     Y_train_combined = None
     X_test_combined = None
@@ -93,7 +93,7 @@ def list_change_section_r1(lists_old, number_section_old, i_1, k, section_list_o
         for j in range(i + 1, number_section_old):
             number_multiply = np.intersect1d(lists_old[f"list_{i}"], lists_old[f"list_{j}"])
             res[i, j] = len(number_multiply)
-    if 7 < np.max(res):
+    if 1 < np.max(res):
         return 0
     else:
         return 5
