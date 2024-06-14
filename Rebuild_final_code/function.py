@@ -213,7 +213,8 @@ def Label_area(pre, n_s, Y_train_combined):
         Max_getway = np.max(np.max(index_Y))
         min_getway = np.min(np.min(index_Y))
         step = (Max_getway - min_getway) / n_s
-        index['model_' + str(section)] = (((min_getway + (step * section)) < index_Y) & ((min_getway + (step * (section + 1))) > index_Y))
+        index['model_' + str(section)] = (
+                    ((min_getway + (step * section)) < index_Y) & ((min_getway + (step * (section + 1))) > index_Y))
         P['model_' + str(section)] = index['model_' + str(section)].copy()
         P['model_' + str(section)][P['model_' + str(section)]] = section
         P['model_' + str(section)] = np.where(P['model_' + str(section)], section, 0)
@@ -238,13 +239,25 @@ def index_section(numebers_section, Y_train_combined, i_model, index, section_li
 def Label_area_new_way(pre, n_s, section_list):
     index = {}
     P = {}
-    for section in range(n_s):
+
+    for section in range(0, n_s):
         index_Y = pre[:, 1]
-        index['model_' + str(section)] = (((section_list[section, 0]) < index_Y) & ((section_list[section, 1]) > index_Y))
+        index['model_' + str(section)] = []
+        for i in range(len(section_list['start_section'][section])):
+            index['model_' + str(section)].append(((section_list['start_section'][section])[i] < index_Y) & (
+                        (section_list['final_section'][section])[i] > index_Y))
         P['model_' + str(section)] = index['model_' + str(section)].copy()
-        P['model_' + str(section)][P['model_' + str(section)]] = section
-        P['model_' + str(section)] = np.where(P['model_' + str(section)], section, 0)
+        # P['model_' + str(section)][P['model_' + str(section)]] = section
+        P['model_' + str(section)] = np.where(P['model_' + str(section)], 1, 0)
     return P
+
+    # for section in range(n_s):
+    #     index_Y = pre[:, 1]
+    #     index['model_' + str(section)] = (((section_list[section, 0]) < index_Y) & ((section_list[section, 1]) > index_Y))
+    #     P['model_' + str(section)] = index['model_' + str(section)].copy()
+    #     # P['model_' + str(section)][P['model_' + str(section)]] = section
+    #     P['model_' + str(section)] = np.where(P['model_' + str(section)], 1, 0)
+    # return P
 
 def list_to_data(list, X_train_combined, X_test_combined):
     X_Train_1 = None
@@ -267,20 +280,20 @@ def evaluation(Y_test_combined, pred, i2, number):
 
     mean_error = np.mean(errors) * 1000
     median_error = np.median(errors) * 1000
-    R2_score = r2_score(Y_test_combined, pred)
+    # R2_score = r2_score(Y_test_combined, pred)
 
     # print(f"i_pre {i_pre}:randomseed_{i2}_Mean Error: {mean_error} meters")
     # print(f"i_pre {i_pre}_randomseed_{i2}_Median Error: {median_error} meters")
     # print(f"i_pre {i_pre}_randomseed_{i2}_R2 Score: {R2_score}\n")
 
-    results_df = pd.DataFrame({
-        'Random': i2,
-        'Mean Error (meters)': [mean_error],
-        'Median Error (meters)': [median_error],
-        'R2 Score': [R2_score],
-        'Pre process': number
-    })
-    results_df.to_csv(f'../result/evaluation_results_{number}_{i2}.csv', index=False)
+    # results_df = pd.DataFrame({
+    #     'Random': i2,
+    #     'Mean Error (meters)': [mean_error],
+    #     'Median Error (meters)': [median_error],
+    #     # 'R2 Score': [R2_score],
+    #     'Pre process': number
+    # })
+    # results_df.to_csv(f'../result/evaluation_results_{number}_{i2}.csv', index=False)
     return mean_error
 
 def evaluation1(Y_test_combined, pred, i2, number,i_pre):

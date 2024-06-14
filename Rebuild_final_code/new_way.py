@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 
 
-result = {"orginal":[], "proposed":[],"old_section":[], "new_sction":[], "start_section":[], "Final_section":[] }
+result = {"orginal":[], "proposed":[],"old_section":[], "new_sction":[], "start_section":[], "Final_section":[], "Error":[], "number hat":[]  }
 i333 = 0
 for number_section_old in range(2, 20):
     for number_seed_1 in range(42, 52):
@@ -68,7 +68,7 @@ for number_section_old in range(2, 20):
                 i_temp_m1 = i_temp
 
         print(number_seed_1, number_section_old, ' is number section and number section after mearg is ===>  ', numbers_section)
-        print(f"\n\n{label_section_value}\n\n")
+        print(f"\n{label_section_value}\n")
         re2 = numbers_section
         re3 = label_section_value["start_section"]
         re4 = label_section_value["final_section"]
@@ -77,7 +77,7 @@ for number_section_old in range(2, 20):
         y_section, X_Train_combine, X_Train_combine_p = {}, {}, {}
         Y_Train_combine, X_Test_combine, X_Test_combine_p= {}, {}, {}
         index = {}
-
+        Errors = {}
         X_train_combined_all, X_test_combined_all = list_to_data(list_fualt_not, X_train_combined, X_test_combined)
         for i_model in range(numbers_section + 1):
             Models['regressor_' + str(i_model)] = RandomForestRegressor()
@@ -87,9 +87,9 @@ for number_section_old in range(2, 20):
                                                                                       X_train_combined, X_test_combined)
 
             index = index_section(numbers_section, Y_train_combined, i_model, index, label_section_value)
-            a = index['model_' + str(i_model)][0]
-            X_Train_combine['X_Train_combine_' + str(i_model)] = X_Train_combine['X_Train_combine_' + str(i_model)][a, :]
-            Y_Train_combine['Y_Train_combine_' + str(i_model)] = Y_train_combined[a, :]
+            a1 = index['model_' + str(i_model)][0]
+            X_Train_combine['X_Train_combine_' + str(i_model)] = X_Train_combine['X_Train_combine_' + str(i_model)][a1, :]
+            Y_Train_combine['Y_Train_combine_' + str(i_model)] = Y_train_combined[a1, :]
 
         if (len(X_Train_combine['X_Train_combine_' + str(i_model)])) != 0:
             for i_model in range(numbers_section + 1):
@@ -102,22 +102,45 @@ for number_section_old in range(2, 20):
                 if i_model == 0:
                     Models[f'regressor_{i_model}'].fit(X_train_combined_p, Y_train_combined)
                     Preds[f'Pred_0'] = Models[f'regressor_0'].predict(X_test_combined_p)
-                    labe_are = Label_area_new_way(Preds[f'Pred_0'], numbers_section, section_list)
+                    labe_are = Label_area_new_way(Preds[f'Pred_0'], numbers_section, label_section_value)
                     a = evaluation(Y_test_combined, Preds[f'Pred_0'], 42, 0)
                 else:
                     Models[f'regressor_{i_model}'].fit(X_Train_combine_p['X_Train_combine_' + str(i_model)],
                                                        Y_Train_combine['Y_Train_combine_' + str(i_model)])
                     Preds[f'Pred_{i_model}'] = Models[f'regressor_{i_model}'].predict(
                         X_Test_combine_p['X_Train_combine_' + str(i_model)])
+            Err = {}
+            for issss in range(1, numbers_section+1):
+                Err[f'true_{issss}'] = []
+                Err[f'hat_{issss}'] = []
+
+            Err[f'number hat'] = []
 
             for i_model in range(1, numbers_section + 1):
                 for i_number_label in range(len(X_test_combined)):
-                    if labe_are[f"model_{i_model - 1}"][i_number_label] == 1:
+                    if labe_are[f"model_{i_model - 1}"][0, i_number_label] == 1:
                         Preds['Pred_0'][i_number_label, :] = Preds[f'Pred_{i_model}'][i_number_label, :]
+                        Err[f'true_{i_model}'].append(Y_test_combined[i_number_label, :])
+                        Err[f'hat_{i_model}'].append(Preds[f'Pred_{i_model}'][i_number_label, :])
+                    else:
+                        if np.sum(labe_are[f"model_{i_model - 1}"], axis=0)[i_number_label] == 1:
+                            Preds['Pred_0'][i_number_label, :] = Preds[f'Pred_{i_model}'][i_number_label, :]
+                            Err[f'true_{i_model}'].append(Y_test_combined[i_number_label, :])
+                            Err[f'hat_{i_model}'].append(Preds[f'Pred_{i_model}'][i_number_label, :])
+
+                Err[f'number hat'].append(np.sum(labe_are[f"model_{i_model - 1}"]))
+                Errors[f'regressor_{i_model}'] = evaluation(Err[f'true_{i_model}'], Err[f'hat_{i_model}'],
+                                                            42, 0)
+
+            # for issss in range(1, numbers_section + 1):
+            #     Errors[f'regressor_{i_model}'] = evaluation(Err[f'true_{i_model}'], Err[f'hat_{i_model}'],
+            #                                                 42, 0)
 
             b = evaluation(Y_test_combined, Preds[f'Pred_0'], 42, 0)
             re5 = a
             re6 = b
+            c = Errors
+            ac = Err[f'number hat']
             print(number_seed_1,number_section_old, b, a, "\n")
         else:
             print('fail')
@@ -128,5 +151,9 @@ for number_section_old in range(2, 20):
         (result["new_sction"]).append(re4)
         (result["start_section"]).append(re5)
         (result["Final_section"]).append(re6)
+        (result["Error"]).append(c)
+        (result["number hat"]).append(ac)
+
+
         DF = pd.DataFrame(result)
-        DF.to_csv("data1.csv")
+        DF.to_csv("data2.csv")
