@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 # Ensure the directory for saving plots exists
-output_dir = 'Combined Plots'
+output_dir = 'Combined Plots_y'
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
@@ -17,7 +17,7 @@ X, Y = dataset.iloc[:, :137].values, dataset.iloc[:, 138:].values
 # Iterate over different numbers of sections
 for n_s in range(2, 20):
     colors = plt.cm.jet(np.linspace(0, 1, n_s))  # Generate colors for each section
-    index_Y = Y[:, 1]
+    index_Y = Y[:, 0]
     max_value = np.max(index_Y)
     min_value = np.min(index_Y)
     step = (max_value - min_value) / n_s
@@ -56,7 +56,7 @@ for n_s in range(2, 20):
 
     # Save the combined plot
     plt.tight_layout()
-    plt.savefig(f'{output_dir}/{n_s}.png')
+    plt.savefig(f'{output_dir}/{n_s}_y.png')
     plt.close()
     print(f'n_s={n_s} plot saved.')
 

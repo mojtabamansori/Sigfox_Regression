@@ -7,14 +7,14 @@ import matplotlib.pyplot as plt
 
 number_section = 20
 
-df = pd.read_csv(f'sigfox_dataset_rural (1).csv')
+df = pd.read_csv(f'Dataset/Orginal.csv')
 dataset = np.array(df)
 X = dataset[:, :137]
 Y = dataset[:, 138:]
 data_plot_mean = np.zeros((number_section, 137))
 data_plot_std = np.zeros((number_section, 137))
 for section in range(number_section):
-    index_Y = Y[:, 1]
+    index_Y = Y[:, 0]
     Max_getway = np.max(np.max(index_Y))
     min_getway = np.min(np.min(index_Y))
     step = (Max_getway - min_getway)/number_section

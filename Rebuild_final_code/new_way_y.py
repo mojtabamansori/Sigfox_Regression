@@ -1,4 +1,4 @@
-from function import *
+from function_y import *
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
@@ -12,7 +12,6 @@ for number_section_old in range(2, 20):
         label_section_value = {"section_number": [], "start_section": [], "final_section": []}
         numbers_section = number_section_old
         re1 = number_section_old
-        last_numbers_section = 2
 
         list_fualt_not = [9, 10, 11, 12, 17,
                               19, 20, 22, 26, 30,
@@ -31,7 +30,7 @@ for number_section_old in range(2, 20):
             Y_test_combined = load_date_def(number_seed_1, (numbers_section + 1))
 
         section_list = return_section_list(numbers_section + 1,
-                                           np.max(np.max(Y_train_combined[:, 1])), np.min(np.min(Y_train_combined[:, 1])))
+                                           np.max(np.max(Y_train_combined[:, 0])), np.min(np.min(Y_train_combined[:, 0])))
         for i_temp in range(len(section_list)):
             label_section_value["section_number"].append([i_temp])
             label_section_value["start_section"].append([section_list[i_temp, 0]])
@@ -155,4 +154,4 @@ for number_section_old in range(2, 20):
         (result["number hat"]).append(ac)
 
         DF = pd.DataFrame(result)
-        DF.to_csv("data2.csv")
+        DF.to_csv("data2_y.csv")
