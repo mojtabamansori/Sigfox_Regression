@@ -155,4 +155,4 @@ for number_section_old in range(2, 20):
         (result["number hat"]).append(ac)
 
         DF = pd.DataFrame(result)
-        DF.to_csv("data2.csv")
+        DF.to_csv("data_x.csv")
