@@ -16,7 +16,7 @@ for i in range(137):
         y = Output[i2, 0]
         x = Output[i2, 1]
         if (rssi+200) != 0:
-            plt.scatter(x, y, s=((rssi+200)*2), alpha=0.4)
+            plt.scatter(x, y, s=((rssi+200)), alpha=0.4)
 
     plt.xlabel('x')
     plt.ylabel('y')
@@ -24,4 +24,4 @@ for i in range(137):
     plt.xlim(np.min(Output[:, 1]), np.max(Output[:, 1]))
     plt.ylim(np.min(Output[:, 0]), np.max(Output[:, 0]))
     plt.grid(True)
-    plt.savefig(f'plot_RF_COVAERAGE/(rssi+200)zarb2/getway_{i}.png')
+    plt.savefig(f'plot_RF_COVAERAGE/(rssi+200)zarb/getway_{i}.png')
