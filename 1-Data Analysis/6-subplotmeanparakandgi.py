@@ -26,7 +26,7 @@ def convert_to_list(list_str):
 # Load datasets and accumulate data
 for i in range(40, 50):
     dataset = np.array(pd.read_csv(f'parakandi plot/data_x_{i}.csv'))
-    endx = -25
+    endx = -50
     row = dataset[2:endx, 0]
     org = dataset[2:endx, 1]
     pro = dataset[2:endx, 2]
@@ -76,43 +76,51 @@ derivative_plot2 = discrete_derivative(plot2)
 derivative_plot3 = discrete_derivative(plot3)
 
 # Function to add straight lines
-def add_straight_lines(ax):
-    ax.axvline(x=10, color='red', linestyle='--')
-    ax.axvline(x=16, color='red', linestyle='--')
-    ax.axvline(x=25, color='blue', linestyle='--')
-    ax.axvline(x=27, color='blue', linestyle='--')
+# def add_straight_lines(ax):
+#     ax.axvline(x=10, color='red', linestyle='--')
+#     ax.axvline(x=16, color='red', linestyle='--')
+#     ax.axvline(x=25, color='blue', linestyle='--')
+#     ax.axvline(x=27, color='blue', linestyle='--')
 
 
 # Plotting the results
 plt.figure()
 
-plt.subplot(231)
+plt.subplot(321)
+plt.title('moshtage(Parakandgi_section1 - Parakandgi_section1)')
 plt.plot(mean_row[:-1], derivative_plot2, label='Normalized Derivative of lat')
 plt.legend()
-add_straight_lines(plt.gca())
+# add_straight_lines(plt.gca())
 
-plt.subplot(232)
-plt.title('Parakandgi')
+plt.subplot(322)
+plt.title('Parakandgi_section1 - Parakandgi_section1')
 plt.plot(mean_row, plot2, label='Normalized lat')
-add_straight_lines(plt.gca())
+# add_straight_lines(plt.gca())
 plt.legend()
 
-plt.subplot(233)
+plt.subplot(323)
 plt.plot(mean_row[:-1], derivative_plot3, label='Normalized Derivative of Gateways')
-plt.legend()
-add_straight_lines(plt.gca())
+plt.title('moshtage(Number of Gateways section 1 - Number of Gateways section 2)')
 
-plt.subplot(234)
-plt.title('Number of Gateways')
+plt.legend()
+# add_straight_lines(plt.gca())
+
+plt.subplot(324)
+plt.title('Number of Gateways section 1 - Number of Gateways section 2')
 plt.plot(mean_row, plot3, label='Normalized Gateways section 1')
-add_straight_lines(plt.gca())
+# add_straight_lines(plt.gca())
 plt.legend()
 
-plt.subplot(235)
-plt.plot(mean_row[:-1], np.convolve(1-(derivative_plot2+(9*derivative_plot3))/10, np.array([1, 1, 1, 1]), mode='same'), label='Normalized Derivative of Gateways')
+plt.subplot(325)
+plt.title('conv3node(mean(1,3))')
+plt.plot(mean_row[:-1], np.convolve(1-(derivative_plot2+(derivative_plot3))/2, np.array([1, 1, 1]), mode='same'), label='Normalized Derivative of Gateways')
 plt.legend()
-add_straight_lines(plt.gca())
+# add_straight_lines(plt.gca())
 
+plt.subplot(326)
+plt.title('mse')
+plt.plot(row,mean_org)
+plt.plot(row,mean_pro)
 
 # plt.savefig('parakandi_plot/mean_plot')
 plt.show()

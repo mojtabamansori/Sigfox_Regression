@@ -43,15 +43,15 @@ for i in range(40,50):
 
     plt.subplot(222)
     plt.title('Parakandgi')
-    plt.plot(row, P1 - P2, label='lat')
-    # plt.plot(row, P2, label='lan')
+    plt.plot(row, P1, label='lat')
+    plt.plot(row, P2, label='lan')
     # plt.ylim([0,0.25])
     plt.legend()
 
     plt.subplot(223)
     plt.title('number getways')
-    plt.plot(row, len_get1 - len_get2, label='getways section 1')
-    # plt.plot(row, len_get2, label='getways section2')
+    plt.plot(row, len_get1 , label='getways section 1')
+    plt.plot(row, len_get2, label='getways section2')
     # plt.ylim([0,138])
     plt.legend()
 
