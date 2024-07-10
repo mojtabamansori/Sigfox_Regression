@@ -6,7 +6,8 @@ import numpy as np
 dataset = np.array(pd.read_csv('../Dataset/Orginal.csv'))
 Input = dataset[:, :137]
 Output = dataset[:, 138:]
-
+print(Input)
+print(Output)
 # Create a scatter plot for each RSSI value
 for i in range(137):
     plt.figure()
