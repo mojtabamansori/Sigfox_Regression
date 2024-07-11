@@ -50,9 +50,7 @@ for number_section_old in range(2, 3):
             if A_S_B == 0:
                 lists, numbers_section, list_gateway_mearge = list_change_section(lists, numbers_section, number_mearge, list_gateway_mearge, section_list)
         i_f_s = 0
-        print(lists)
         for dc, i_temp in enumerate(list_gateway_mearge):
-
             if ((dc) % 3) == 2:
                 i_temp_m2 = i_temp
 

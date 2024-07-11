@@ -147,15 +147,16 @@ def f_e_mean_std(marz):
         number_1 = points[points[:,1] < marz]
         number_2 = points[points[:,1] > marz]
         sumation = len(number_1) + len(number_2)
-        tr = 1
+        tr = .5
         sumation = sumation * tr
-        if len(number_1) >= sumation:
-            getway_useful.append(0)
-            getway_useful.append(i)
+        if sumation > 50:
+            if len(number_1) >= sumation:
+                getway_useful.append(0)
+                getway_useful.append(i)
 
-        if len(number_2) >= sumation:
-            getway_useful.append(1)
-            getway_useful.append(i)
+            if len(number_2) >= sumation:
+                getway_useful.append(1)
+                getway_useful.append(i)
 
 
     return getway_useful
@@ -273,18 +274,6 @@ def evaluation(Y_test_combined, pred, i2, number):
     median_error = np.median(errors) * 1000
     # R2_score = r2_score(Y_test_combined, pred)
 
-    # print(f"i_pre {i_pre}:randomseed_{i2}_Mean Error: {mean_error} meters")
-    # print(f"i_pre {i_pre}_randomseed_{i2}_Median Error: {median_error} meters")
-    # print(f"i_pre {i_pre}_randomseed_{i2}_R2 Score: {R2_score}\n")
-
-    # results_df = pd.DataFrame({
-    #     'Random': i2,
-    #     'Mean Error (meters)': [mean_error],
-    #     'Median Error (meters)': [median_error],
-    #     # 'R2 Score': [R2_score],
-    #     'Pre process': number
-    # })
-    # results_df.to_csv(f'../result/evaluation_results_{number}_{i2}.csv', index=False)
     return mean_error
 
 def evaluation1(Y_test_combined, pred, i2, number,i_pre):
