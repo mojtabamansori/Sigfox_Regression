@@ -26,3 +26,4 @@ for i in range(137):
     plt.ylim(np.min(Output[:, 0]), np.max(Output[:, 0]))
     plt.grid(True)
     plt.savefig(f'plot_RF_COVAERAGE/(rssi+200)zarb/getway_{i}.png')
+    plt.close()
